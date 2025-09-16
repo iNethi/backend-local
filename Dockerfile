@@ -27,4 +27,4 @@ ENV PATH="/scripts:/py/bin:$PATH"
 
 USER django-user
 
-CMD ["run.sh"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "backend.wsgi:application"]

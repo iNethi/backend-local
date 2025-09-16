@@ -17,7 +17,7 @@ services:
               python manage.py makemigrations &&
               python manage.py migrate &&
               python manage.py create_superuser &&
-              python manage.py runserver 0.0.0.0:8000"
+              gunicorn --bind 0.0.0.0:8000 --workers 3 backend.wsgi:application"
     environment:
       - DB_HOST=${DB_HOST:-db}
       - DB_NAME=${DB_NAME:-db}
