@@ -1,0 +1,50 @@
+services:
+  app:
+    container_name: inethi-backend-local
+    restart: no
+    env_file:
+      - ./.env
+    build:
+      context: .
+      args:
+        - DEV=${DEV:-false}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/backend
+    command: >
+      sh -c "sleep 10 &&
+              python manage.py create_superuser &&
+              python manage.py makemigrations &&
+              python manage.py migrate &&
+              python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=${DB_HOST:-db}
+      - DB_NAME=${DB_NAME:-db}
+      - DB_USER=${DB_USER:-user}
+      - DB_PASS=${DB_PASS:-pass}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`${TRAEFIK_BACKEND_HOST:-backend.inethilocal.net}`)"
+      - "traefik.http.routers.backend.entrypoints=${TRAEFIK_ENTRYPOINTS:-websecure}"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    depends_on:
+      - db
+  db:
+    image: postgres:17.6
+    restart: no
+    container_name: inethi-backend-db-local
+    env_file:
+      - ./.env
+    volumes:
+      - backend-db-data-local:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME:-db}
+      - POSTGRES_USER=${DB_USER:-user}
+      - POSTGRES_PASSWORD=${DB_PASS:-pass}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend-db.entrypoints=${TRAEFIK_ENTRYPOINTS:-websecure}"
+
+volumes:
+  backend-db-data-local:

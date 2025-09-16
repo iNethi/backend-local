@@ -1,0 +1,42 @@
+services:
+  app:
+    container_name: inethi-backend-local-dev
+    restart: no
+    env_file:
+      - ./.env
+    build:
+      context: .
+      args:
+        - DEV=${DEV:-true}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/backend
+    command: >
+      sh -c "sleep 10 &&
+              python manage.py create_superuser &&
+              python manage.py makemigrations &&
+              python manage.py migrate &&
+              python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=${DB_HOST:-db}
+      - DB_NAME=${DB_NAME:-devdb}
+      - DB_USER=${DB_USER:-devuser}
+      - DB_PASS=${DB_PASS:-devpass}
+    depends_on:
+      - db
+  db:
+    image: postgres:17.6
+    restart: no
+    container_name: inethi-backend-db-local-dev
+    env_file:
+      - ./.env
+    volumes:
+      - dev-db-data-local-dev:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME:-devdb}
+      - POSTGRES_USER=${DB_USER:-devuser}
+      - POSTGRES_PASSWORD=${DB_PASS:-devpass}
+
+volumes:
+  dev-db-data-local-dev:
