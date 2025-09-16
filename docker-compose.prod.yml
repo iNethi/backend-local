@@ -47,7 +47,7 @@ services:
       - "traefik.http.routers.backend-db.entrypoints=${TRAEFIK_ENTRYPOINTS:-websecure}"
 networks:
   default:
-    external:
-      name: "${TRAEFIK_NETWORK_BRIDGE:-inethi-bridge-traefik}"
+    name: "${TRAEFIK_NETWORK_BRIDGE:-inethi-bridge-traefik}"
+    external: true
 volumes:
   backend-db-data-local:
