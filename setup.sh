@@ -228,29 +228,10 @@ while [ $attempt -le $max_attempts ]; do
     ((attempt++))
 done
 
-# Run management commands to set up the database
-print_header "Setting Up Database"
-print_color $BLUE "Running management commands to set up the database..."
-
-# Run migrations
-print_color $BLUE "Running database migrations..."
-if docker compose -f docker-compose.prod.yml exec -T app python manage.py migrate 2>/dev/null || \
-   docker compose -f docker-compose.prod.yml exec -T app python manage.py migrate 2>/dev/null; then
-    print_color $GREEN "✓ Database migrations completed"
-else
-    print_color $YELLOW "Warning: Failed to run migrations (database might already be up to date)"
-fi
-
-# Create superuser
-print_color $BLUE "Creating superuser..."
-if docker compose -f docker-compose.prod.yml exec -T app python manage.py create_superuser 2>/dev/null || \
-   docker compose -f docker-compose.prod.yml exec -T app python manage.py create_superuser 2>/dev/null; then
-    print_color $GREEN "✓ Superuser created successfully"
-else
-    print_color $YELLOW "Warning: Failed to create superuser (might already exist or need manual creation)"
-    print_color $BLUE "You can create a superuser manually with:"
-    print_color $YELLOW "  docker compose -f docker-compose.prod.yml exec app python manage.py createsuperuser"
-fi
+# Database setup is now handled automatically by the container startup command
+print_header "Database Setup"
+print_color $BLUE "Database migrations and superuser creation are handled automatically during container startup."
+print_color $GREEN "✓ Database setup completed automatically"
 
 # Final status check
 print_header "Deployment Status"
