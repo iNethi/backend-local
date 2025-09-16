@@ -1,5 +1,5 @@
 services:
-  app:
+  inethi-backend-local:
     container_name: inethi-backend-local
     restart: no
     env_file:
@@ -28,8 +28,8 @@ services:
       - "traefik.http.routers.backend.entrypoints=${TRAEFIK_ENTRYPOINTS:-websecure}"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
     depends_on:
-      - db
-  db:
+      - inethi-backend-db-local
+  inethi-backend-db-local:
     image: postgres:17.6
     restart: no
     container_name: inethi-backend-db-local
